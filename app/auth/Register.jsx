@@ -41,8 +41,8 @@ const Register = () => {
                 <TextInput onChangeText={handleUsername} style={styles.input} placeholder='Username'/>
                 <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password'/>
                 <TextInput onChangeText={handleConfirmPassword} style={styles.input} placeholder='Confirm Password'/>
-                <Pressable onPress={Register}>
-                  <Text style={styles.action_btn}>Sign Up</Text>
+                <Pressable style={styles.action_btn} onPress={Register}>
+                  <Text style={styles.action_btn_text}>Sign Up</Text>
                 </Pressable>
                 <Pressable onPress={navLogin}>
                   <Text style={styles.small_text}>Login</Text>
@@ -75,27 +75,36 @@ const styles = StyleSheet.create({
     input: {
       borderWidth: 1,
       borderColor: '#e6e3e2',
-      width: 250,
+      width: '80%',
+      height: 45,
       paddingRight: 10,
       paddingLeft: 10,
       paddingTop: 6,
       paddingBottom: 6,
       marginBottom: 15,
-      borderRadius: 8
+      borderRadius: 6
     },
     input_container: {
-      marginBottom: 200
+      marginBottom: 200,
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     small_text: {
       color: '#4C6DEF',
       marginTop: 20,
       alignSelf: 'center'
     },
-    action_btn: {
+    action_btn_text: {
       backgroundColor: '#4C6DEF',
       color: 'white',
       padding: 10,
-      borderRadius: 16,
+      borderRadius: 6,
       textAlign: 'center'
+    },
+    action_btn: {
+      width: '80%',
+      height: 45,
     }
   });

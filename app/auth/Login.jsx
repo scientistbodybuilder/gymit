@@ -1,12 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TextInput, Text, View, Pressable } from "react-native";
 import { useState } from 'react';
-import { router } from 'expo-router' 
+import { useRouter } from 'expo-router' 
 
 
 const Login = () => {
-  const [enteredUsername, setUsername] = useState('')
+    const [enteredUsername, setUsername] = useState('')
     const [enteredPassword, setPassword] = useState('')
+    const router = useRouter()
     const handleUsername = (enteredText) => {
       setUsername(enteredText)
     }
@@ -22,6 +23,7 @@ const Login = () => {
       }
       console.log(enteredUsername)
       console.log(enteredPassword)
+      router.push("(tabs)")
   
     }
     return(
@@ -31,8 +33,8 @@ const Login = () => {
              <View style={styles.input_container}>
                <TextInput onChangeText={handleUsername} style={styles.input} placeholder='Username'/>
                <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password'/>
-               <Pressable onPress={Login}>
-                 <Text style={styles.action_btn}>Login</Text>
+               <Pressable style={styles.action_btn} onPress={Login}>
+                 <Text style={styles.action_btn_text}>Login</Text>
                </Pressable>
                <Pressable onPress={navRegister}>
                  <Text style={styles.small_text}>Register</Text>
@@ -63,7 +65,8 @@ const styles = StyleSheet.create({
     input: {
       borderWidth: 1,
       borderColor: '#e6e3e2',
-      width: 250,
+      width: '80%',
+      height: 45,
       paddingRight: 10,
       paddingLeft: 10,
       paddingTop: 6,
@@ -72,19 +75,27 @@ const styles = StyleSheet.create({
       borderRadius: 8
     },
     input_container: {
-      marginBottom: 200
+      marginBottom: 200,
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     small_text: {
       color: '#4C6DEF',
       marginTop: 20,
       alignSelf: 'center'
     },
-    action_btn: {
+    action_btn_text: {
       backgroundColor: '#4C6DEF',
       color: 'white',
       padding: 10,
-      borderRadius: 16,
+      borderRadius: 6,
       textAlign: 'center'
+    },
+    action_btn: {
+      width: '80%',
+      height: 45,
     }
   });
 

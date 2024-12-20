@@ -8,6 +8,7 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <Text>Home</Text>
+            <StatusBar style="auto" />
         </View>
 
     );
