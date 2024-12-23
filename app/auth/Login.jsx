@@ -1,12 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, TextInput, Text, View, Pressable } from "react-native";
+import { StyleSheet, TextInput, Text, View, Pressable, Alert,ActivityIndicator } from "react-native";
 import { useState } from 'react';
 import { useRouter } from 'expo-router' 
+import app from '../firebaseConfig'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 
 
 const Login = () => {
     const [enteredUsername, setUsername] = useState('')
     const [enteredPassword, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
     const handleUsername = (enteredText) => {
       setUsername(enteredText)
@@ -17,15 +20,22 @@ const Login = () => {
     const navRegister= () => {
       router.push("/auth/Register")
     }
-    const Login = () => {
-      if (enteredPassword == '' || enteredUsername == ''){
-        console.log('Please enter username and password')
+    
+    async function login() {
+      setLoading(true)
+      try {
+        const auth = getAuth(app)
+        const response = await signInWithEmailAndPassword(auth, enteredUsername, enteredPassword)
+        console.log(response)
+
+      } catch(e){
+        console.log(e)
+        setLoading(false)
+        Alert.alert('Ooops','something went wrong')
       }
-      console.log(enteredUsername)
-      console.log(enteredPassword)
-      router.push("(tabs)")
-  
+      
     }
+  
     return(
        <View style={styles.container}>
              <Text style={styles.txt}>Gymit</Text>
@@ -33,8 +43,12 @@ const Login = () => {
              <View style={styles.input_container}>
                <TextInput onChangeText={handleUsername} style={styles.input} placeholder='Username'/>
                <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password'/>
-               <Pressable style={styles.action_btn} onPress={Login}>
-                 <Text style={styles.action_btn_text}>Login</Text>
+               <Pressable style={styles.action_btn} onPress={login}>  
+                  {loading ? (
+                    <ActivityIndicator size={'small'} color={'white'} animating={loading} />
+                  ) : (
+                    <Text style={styles.action_btn_text}> Login </Text>
+                  )} 
                </Pressable>
                <Pressable onPress={navRegister}>
                  <Text style={styles.small_text}>Register</Text>

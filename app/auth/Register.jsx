@@ -1,7 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, TextInput, Pressable } from "react-native";
+import { StyleSheet, Text, View, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useState } from 'react';
 import { router } from 'expo-router'
+import app from '../firebaseConfig'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
 
 const Register = () => {
@@ -9,6 +11,7 @@ const Register = () => {
     const [enteredUsername, setUsername] = useState('')
     const [enteredPassword, setPassword] = useState('')
     const [enteredConfirmPassword, setConfirmPassword] = useState('')
+    const [loading, setLoading] = useState(false)
   
     const handleEmail = (enteredText) => {
       setEmail(enteredText)
@@ -26,11 +29,22 @@ const Register = () => {
       router.push("/auth/Login")
     }
   
-    const Register = () => {
-      console.log(enteredEmail)
-      console.log(enteredUsername)
-      console.log(enteredPassword)
-      console.log(enteredConfirmPassword)
+    async function register() {
+      setLoading(true)
+      try {
+        if (enteredConfirmPassword == enteredPassword){
+          const auth = getAuth(app)
+          const response = await createUserWithEmailAndPassword(auth, enteredEmail, enteredPassword)
+          console.log(response)
+        } else {
+          Alert.alert('Passwords','do not match')
+        }
+        
+      } catch(e) {
+        console.log(e)
+        setLoading(false)
+        Alert.alert('Ooops','something went wrong')
+      }
     }
     return(
         <View style={styles.container}>
@@ -41,8 +55,12 @@ const Register = () => {
                 <TextInput onChangeText={handleUsername} style={styles.input} placeholder='Username'/>
                 <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password'/>
                 <TextInput onChangeText={handleConfirmPassword} style={styles.input} placeholder='Confirm Password'/>
-                <Pressable style={styles.action_btn} onPress={Register}>
-                  <Text style={styles.action_btn_text}>Sign Up</Text>
+                <Pressable style={styles.action_btn} onPress={register}>
+                  {loading ? (
+                    <ActivityIndicator size={'small'} color={'white'} animating={loading} />
+                  ) : (
+                    <Text style={styles.action_btn_text}> Sign up </Text>
+                  )} 
                 </Pressable>
                 <Pressable onPress={navLogin}>
                   <Text style={styles.small_text}>Login</Text>
