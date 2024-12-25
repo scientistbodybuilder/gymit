@@ -2,8 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useState } from 'react';
 import { router } from 'expo-router'
-import app from '../firebaseConfig'
+import { app, db } from '../firebaseConfig'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 
 
 const Register = () => {
@@ -34,10 +35,25 @@ const Register = () => {
       try {
         if (enteredConfirmPassword == enteredPassword){
           const auth = getAuth(app)
-          const response = await createUserWithEmailAndPassword(auth, enteredEmail, enteredPassword)
-          console.log(response)
+          // try and see if a user already exist with that email
+          const usersRef = collection(db, "users")
+          const emailQuery = query(usersRef, where("id", "==", enteredEmail))
+          // emailQuery.forEach((doc) => {
+          //   console.log(`${doc.data().username}, ${doc.data().password}`)
+          // })
+          console.log(emailQuery)
+        
+
+
+          // const response = await createUserWithEmailAndPassword(auth, enteredEmail, enteredPassword)
+          // console.log(response)
+          // if('FirebaseError' in response){
+          //   Alert.alert('Registration Error')
+          // } else {
+          //   router.push('/auth/Login')
+          // }
         } else {
-          Alert.alert('Passwords','do not match')
+          Alert.alert('Ooops','Passwords do not match')
         }
         
       } catch(e) {

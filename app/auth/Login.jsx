@@ -26,7 +26,13 @@ const Login = () => {
       try {
         const auth = getAuth(app)
         const response = await signInWithEmailAndPassword(auth, enteredUsername, enteredPassword)
-        console.log(response)
+        if('FirebaseError' in response){
+          setLoading(false)
+          Alert.alert('Invalid Credentials')
+        } else {
+          router.push("(tabs)")
+        }
+
 
       } catch(e){
         console.log(e)
