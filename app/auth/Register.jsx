@@ -5,6 +5,7 @@ import { router } from 'expo-router'
 import { app, db } from '../firebaseConfig'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { colorScheme } from "nativewind";
 
 
 const Register = () => {
@@ -35,23 +36,35 @@ const Register = () => {
       try {
         if (enteredConfirmPassword == enteredPassword){
           const auth = getAuth(app)
+          
           // try and see if a user already exist with that email
           const usersRef = collection(db, "users")
-          const emailQuery = query(usersRef, where("id", "==", enteredEmail))
-          // emailQuery.forEach((doc) => {
-          //   console.log(`${doc.data().username}, ${doc.data().password}`)
-          // })
-          console.log(emailQuery)
-        
+          const user = []
+          const emailSnapShot = await getDocs(query(usersRef, where("email", "==", enteredEmail)))
+          if(!emailSnapShot.empty){
+            console.log("An account with this email already exist")
+          } else {
+            const usernameSnapShot = await getDocs(query(usersRef, where("username", "==", enteredUsername)))
+            if(!usernameSnapShot.empty){
+              console.log('Username is not unique')
+            } else {
+              //create the new user in the auth
+              const response = await createUserWithEmailAndPassword(auth,enteredEmail,enteredPassword)
+              if('FirebaseError' in response){
+                Alert.alert("Oops",'Registration Error')
+              } else {
+                //create the new user in the firestore
+                const newDocRef = await addDoc(usersRef, {
+                  username: enteredUsername,
+                  email: enteredEmail,
+                  password: enteredPassword,
+                  avatar: ""
+                })
+                router.push('/auth/Login')
+              }  
+            }
+          }
 
-
-          // const response = await createUserWithEmailAndPassword(auth, enteredEmail, enteredPassword)
-          // console.log(response)
-          // if('FirebaseError' in response){
-          //   Alert.alert('Registration Error')
-          // } else {
-          //   router.push('/auth/Login')
-          // }
         } else {
           Alert.alert('Ooops','Passwords do not match')
         }

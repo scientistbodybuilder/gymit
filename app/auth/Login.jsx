@@ -2,8 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TextInput, Text, View, Pressable, Alert,ActivityIndicator } from "react-native";
 import { useState } from 'react';
 import { useRouter } from 'expo-router' 
-import app from '../firebaseConfig'
+import { app, db } from '../firebaseConfig'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { collection, getDocs, query, where, and } from "firebase/firestore";
 
 
 const Login = () => {
@@ -25,15 +26,37 @@ const Login = () => {
       setLoading(true)
       try {
         const auth = getAuth(app)
-        const response = await signInWithEmailAndPassword(auth, enteredUsername, enteredPassword)
-        if('FirebaseError' in response){
-          setLoading(false)
-          Alert.alert('Invalid Credentials')
+        const userRef = collection(db, "users")
+        const userSnapShot = await getDocs(query(userRef, where("username", "==", enteredUsername)))
+        const user = []
+        if(!userSnapShot.empty){
+          userSnapShot.forEach((doc) => {
+            user.push({"username":doc.data().username,
+                        "password":doc.data().password,
+                        "email":doc.data().email
+                      }
+          )
+          })
+          
+          if(user[0]["username"] == enteredUsername && user[0]["password"] == enteredPassword){
+            console.log("An existing user with proper credentials")
+            const response = await signInWithEmailAndPassword(auth,user[0]["email"],enteredPassword)
+            if('FirebaseError' in response){
+              Alert.alert('Oops','Authentication Error')
+            } else {
+              router.push('(tabs)')
+            } 
+          } else if (user[0]["username"] != enteredUsername && user[0]["password"] == enteredPassword){
+            console.log("incorrect username")
+            Alert.alert('Oops','Incorrect Username')
+          } else if (user[0]["username"] == enteredUsername && user[0]["password"] != enteredPassword){
+            console.log("incorrect password")
+            Alert.alert('Oops','Incorrect Password')
+          }
         } else {
-          router.push("(tabs)")
+          console.log("Invalid Credentials")
+          Alert.alert('Sorry...','Invalid Credentials')
         }
-
-
       } catch(e){
         console.log(e)
         setLoading(false)
