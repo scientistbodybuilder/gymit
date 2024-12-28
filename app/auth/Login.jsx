@@ -71,7 +71,7 @@ const Login = () => {
              <StatusBar style="auto" />
              <View style={styles.input_container}>
                <TextInput onChangeText={handleUsername} style={styles.input} placeholder='Username'/>
-               <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password'/>
+               <TextInput onChangeText={handlePassword} style={styles.input} placeholder='Password' secureTextEntry/>
                <Pressable style={styles.action_btn} onPress={login}>  
                   {loading ? (
                     <ActivityIndicator size={'small'} color={'white'} animating={loading} />

@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { router } from 'expo-router'
 import { app, db } from '../../firebaseConfig'
@@ -6,7 +7,57 @@ import { getAuth } from 'firebase/auth'
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 const Profile = () => {
     const auth = getAuth(app)
-    console.log()
+    //get the user data needed to be displayed in the profile
+    const email = auth.currentUser?.email
+    const [username, setUsername] = useState('')
+    const [name, setName] = useState('')
+    const [avatarUrl, setAvatarUrl] = useState('')
+    const [interest, setInterest] = useState([])
+    const [bio, setBio] = useState('')
+
+    const [useInfo, setUserInfo] = useState({})
+
+    const fetchUserInfo = async (email) => {
+        try {
+            const userRef = collection(db, "users")
+            const userSnapShot = await getDocs(query(userRef, where("email", "==", email)))
+            const user = []
+            if(!userSnapShot.empty){
+                userSnapShot.forEach((doc) => {
+                    user.push({"username":doc.data().username,
+                                //"name":doc.data().name,
+                                //"interest":doc.data().interest
+                                //"avatar_url": doc.data().avatar_url
+                                //"bio": doc.data().bio
+                            }
+                )
+                })
+                setUsername(user[0]["username"])
+                setUserInfo(user[0])
+                //
+                //
+                //
+                //
+            }
+        } catch(e){
+            console.log(`Error: ${e}`)
+        }
+    }
+
+    useEffect(() => {
+        fetchUserInfo(email);
+    }, [email]);
+
+    const navFollowers = () => {
+        // router.push('/account/page1')
+        console.log(`go to ${email}'s followers`)
+    }
+
+    const navFollowing = () => {
+        // router.push('/account/page2')
+        console.log(`go to ${email}'s following`)
+    }
+        
     return(
         <View style={styles.container}>
             <View style={styles.c}>
@@ -16,31 +67,36 @@ const Profile = () => {
                     <View style={styles.avatar}>
 
                     </View>
-                    <Text style={styles.username}>@ousman</Text>
+                    <Text style={styles.username}>@{username}</Text>
                     <Text style={styles.alias}>OUS</Text>
                 </View>
                 <View style={styles.follow_box}>
-                    <Pressable>
+                    <Pressable onPress={navFollowers}>
                         <View style={styles.f_btn}>
                             <Text style={styles.btn_text}>Followers</Text>
                         </View>
                     </Pressable>
-                    <Pressable>
+                    <Pressable onPress={navFollowing}>
                         <View style={styles.f_btn}>
                             <Text style={styles.btn_text}>Following</Text>
                         </View>
                     </Pressable>
                 </View>
             </View>
-            <View style={styles.interest_box}>
-
-            </View>
+        
             <View style={styles.bio_box}>
                 <Text style={styles.bio}>
                     Hi! My name is Ousman. I like going to gym to workout with friends
                 </Text>
-
             </View>
+
+            <View style={styles.interest_box}>
+                    <Text style={styles.text}>Interests</Text>
+                    <View style={styles.interset_card_container}>
+
+                    </View>
+            </View>
+
             </View>
         </View>
     );
@@ -105,6 +161,7 @@ const styles = StyleSheet.create({
 
     },
     follow_box: {
+        display: 'flex',
         flex: 1,
         flexDirection: 'row',
         gap: 5,
@@ -124,7 +181,16 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     interest_box: {
-
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    text:{
+        fontWeight: 'bold',
+        fontSize: 16
+    },
+    interset_card_container: {
+        display: 'grid'
     }
 
 })
