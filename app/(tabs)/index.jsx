@@ -11,7 +11,7 @@ const Home = () => {
         const auth = getAuth(app)
         signOut(auth).then(()=>{
             console.log('user signout')
-            router.push('/auth/Login')
+            router.push('../')
         }).catch((error)=>{
             console.log(`Error signing out: ${error}`)
         })
@@ -19,13 +19,7 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <Text>Home</Text>
-            <Pressable onPress={signout}>
-                <View style={styles.signout_btn}>
-                    <Text style={styles.signout}>
-                        Sign out
-                    </Text>
-                </View>
-            </Pressable>
+            
             <StatusBar style="auto" />
         </View>
 

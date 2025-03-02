@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import { useState } from 'react';
 import { router } from 'expo-router'
-import { app, db } from '../firebaseConfig'
+import { app, db } from './firebaseConfig'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { colorScheme } from "nativewind";
@@ -28,7 +28,7 @@ const Register = () => {
       setConfirmPassword(enteredText)
     }
     const navLogin = () => {
-      router.push("/auth/Login")
+      router.push("/")
     }
   
     async function register() {
@@ -36,6 +36,10 @@ const Register = () => {
       try {
         if (enteredConfirmPassword == enteredPassword){
           const auth = getAuth(app)
+
+          //normalize the email
+          setEmail(enteredEmail.toLowerCase())
+          console.log(`The normalized email is now ${enteredEmail}`)
           
           // try and see if a user already exist with that email
           const usersRef = collection(db, "users")
@@ -60,7 +64,7 @@ const Register = () => {
                   password: enteredPassword,
                   avatar: ""
                 })
-                router.push('/auth/Login')
+                router.push('/')
               }  
             }
           }

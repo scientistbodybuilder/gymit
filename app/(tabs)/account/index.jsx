@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { router } from 'expo-router'
 import { app, db } from '../../firebaseConfig'
-import { getAuth } from 'firebase/auth'
+import { getAuth, signOut } from 'firebase/auth'
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 const Profile = () => {
     const auth = getAuth(app)
@@ -57,10 +57,25 @@ const Profile = () => {
         // router.push('/account/page2')
         console.log(`go to ${email}'s following`)
     }
+
+    const signout = () => {
+            const auth = getAuth(app)
+            signOut(auth).then(()=>{
+                console.log('user signout')
+                router.push('../../register')
+            }).catch((error)=>{
+                console.log(`Error signing out: ${error}`)
+            })
+        }
         
     return(
         <View style={styles.container}>
             <View style={styles.c}>
+            <View style={styles.logout_box}>
+                <Pressable onPress={signout}>
+                    <Text style={styles.logout}>Sign out</Text>
+                </Pressable>
+            </View>
             <View style={styles.top_container}>
             <StatusBar style="auto" />
                 <View style={styles.avatar_box}>
@@ -104,6 +119,7 @@ const Profile = () => {
 
 export default Profile
 
+const PRIMARY = "#4C6DEF"
 const styles = StyleSheet.create({
     container: {
         flex:1,
@@ -120,6 +136,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    logout_box: {
+        width: '100%',
+        height: 25,
+        justifyContent: 'end',
+        position: 'absolute',
+        top: 0,
+        // borderWidth: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        maxHeight: '10%',
+        paddingVertical: 20
+    },
+    logout: {
+        color: PRIMARY,
+        fontWeight: 500,
+        fontSize: 18
+    },
     top_container: {
         flex: 1,
         justifyContent: 'center',
@@ -132,12 +165,14 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 5
+        gap: 5,
+        // borderWidth: 1,
+        width: '70%'
     },
     avatar: {
         borderRadius: '50%',
         aspectRatio: 1 / 1,
-        width: '35%',
+        width: '50%',
         borderWidth: 1,
         borderColor: '#8c8c8c'
     },
@@ -192,5 +227,4 @@ const styles = StyleSheet.create({
     interset_card_container: {
         display: 'grid'
     }
-
 })
